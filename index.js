@@ -1,5 +1,5 @@
-// DOM Elements
-const noteInput = document.getElementById('noteInput');
+const noteTitle = document.getElementById('noteTitle');
+const noteBody = document.getElementById('noteBody');
 const notesList = document.getElementById('notesList');
 const saveNoteBtn = document.getElementById('saveNoteBtn');
 const showNotesBtn = document.getElementById('showNotesBtn');
@@ -7,7 +7,6 @@ const closeNotesBtn = document.getElementById('closeNotesBtn');
 const notesContainer = document.getElementById('notesContainer');
 const darkModeToggle = document.getElementById('darkModeToggle');
 
-// Initialize the app
 function init() {
   loadTheme();
   loadDraft();
@@ -18,30 +17,36 @@ function init() {
   darkModeToggle.addEventListener('change', toggleDarkMode);
 
   // Auto-save draft
-  noteInput.addEventListener('input', () => {
-    localStorage.setItem('currentDraft', noteInput.value);
+  noteBody.addEventListener('input', () => {
+    localStorage.setItem('currentDraftBody', noteBody.value);
+  });
+  noteTitle.addEventListener('input', () => {
+    localStorage.setItem('currentDraftTitle', noteTitle.value);
   });
 }
 
-// Save a new note
 function saveNote() {
-  const noteText = noteInput.value.trim();
-  if (!noteText) {
-    showNotification("Please write something before saving!");
+  const title = noteTitle.value.trim();
+  const body = noteBody.value.trim();
+
+  if (!title || !body) {
+    showNotification("Please fill in both the title and body!");
     return;
   }
 
+  const note = { title, body };
   const notes = JSON.parse(localStorage.getItem('notes')) || [];
-  notes.push(noteText);
+  notes.push(note);
   localStorage.setItem('notes', JSON.stringify(notes));
 
-  noteInput.value = '';
-  localStorage.removeItem('currentDraft');
+  noteTitle.value = '';
+  noteBody.value = '';
+  localStorage.removeItem('currentDraftTitle');
+  localStorage.removeItem('currentDraftBody');
 
   showNotification('Note saved successfully!');
 }
 
-// Show saved notes
 function showSavedNotes() {
   const notes = JSON.parse(localStorage.getItem('notes')) || [];
 
@@ -55,7 +60,10 @@ function showSavedNotes() {
   } else {
     notesList.innerHTML = notes.map((note, index) => `
       <div class="note">
-        <div class="note-content">${note}</div>
+        <div class="note-content">
+          <strong>${note.title}</strong>
+          <p>${note.body}</p>
+        </div>
         <button class="delete-btn" onclick="deleteNote(${index})">
           <i class="fas fa-trash-alt"></i> Delete
         </button>
@@ -66,12 +74,10 @@ function showSavedNotes() {
   notesContainer.classList.remove('hidden');
 }
 
-// Hide saved notes
 function hideSavedNotes() {
   notesContainer.classList.add('hidden');
 }
 
-// Delete a note
 function deleteNote(index) {
   const notes = JSON.parse(localStorage.getItem('notes')) || [];
   if (index >= 0 && index < notes.length) {
@@ -82,14 +88,12 @@ function deleteNote(index) {
   }
 }
 
-// Toggle dark mode
 function toggleDarkMode() {
   document.body.classList.toggle('dark');
   const isDarkMode = document.body.classList.contains('dark');
   localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
 }
 
-// Load saved theme
 function loadTheme() {
   const darkMode = localStorage.getItem('darkMode');
   if (darkMode === 'enabled') {
@@ -98,15 +102,11 @@ function loadTheme() {
   }
 }
 
-// Load saved draft
 function loadDraft() {
-  const draft = localStorage.getItem('currentDraft');
-  if (draft) {
-    noteInput.value = draft;
-  }
+  noteTitle.value = localStorage.getItem('currentDraftTitle') || '';
+  noteBody.value = localStorage.getItem('currentDraftBody') || '';
 }
 
-// Show toast notification
 function showNotification(message) {
   const notification = document.createElement('div');
   notification.className = 'notification';

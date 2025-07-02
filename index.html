@@ -21,13 +21,14 @@
 
   <div class="container">
     <div class="note-input-container">
-      <textarea id="noteInput" placeholder="Write your heart out... 💖"></textarea>
+      <input type="text" id="noteTitle" placeholder="Note Title ✏️" />
+      <textarea id="noteBody" placeholder="Write your heart out... 💖"></textarea>
       <div class="note-actions">
         <button id="saveNoteBtn"><i class="fas fa-save"></i> Save Note</button>
         <button id="showNotesBtn"><i class="fas fa-book-open"></i> My Saved Notes</button>
       </div>
     </div>
-    
+
     <div id="notesContainer" class="hidden">
       <div class="notes-header">
         <h2><i class="fas fa-bookmark"></i> Saved Notes</h2>
